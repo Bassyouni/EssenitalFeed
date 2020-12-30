@@ -17,7 +17,6 @@ class URLSessionHTTPClient {
     }
     
     func get(from url: URL, completion: @escaping (HTTPClientResult) -> Void) {
-        let url = URL(string: "https://www.google.com")!
         session.dataTask(with: url) { (_, _, error) in
             if let error = error {
                 completion(.failure(error))
@@ -33,12 +32,10 @@ class URLSessionHTTPClientTests: XCTestCase {
         URLProtocolStub.startInterceptingRequests()
     }
     
-    
     override func tearDown() {
         URLProtocolStub.stopInterceptingRequests()
         super.tearDown()
     }
-    
     
     func test_getFromUrl_perfromGetRequestFromURL() {
         let url = URL(string: "http://any-url.com")!
@@ -50,7 +47,7 @@ class URLSessionHTTPClientTests: XCTestCase {
             exp.fulfill()
         }
         
-        URLSessionHTTPClient().get(from: url) { _ in }
+        makeSUT().get(from: url) { _ in }
         
         wait(for: [exp], timeout: 0.1)
     }
@@ -60,10 +57,8 @@ class URLSessionHTTPClientTests: XCTestCase {
         let error = NSError(domain: "Test", code: Int.random(in: 1...999))
         URLProtocolStub.stub(data: nil, response: nil, error: error)
         
-        let sut = URLSessionHTTPClient()
-        
         let exp = expectation(description: "wait for compleiton")
-        sut.get(from: url) { result in
+        makeSUT().get(from: url) { result in
             switch result {
             case let .failure(recivedError as NSError):
                 XCTAssertEqual(recivedError.code, error.code)
@@ -76,6 +71,12 @@ class URLSessionHTTPClientTests: XCTestCase {
         }
         
         wait(for: [exp], timeout: 0.1)
+    }
+    
+    private func makeSUT() -> URLSessionHTTPClient {
+        let sut = URLSessionHTTPClient()
+        checkForMemoryLeaks(sut)
+        return sut
     }
     
     class URLProtocolStub: URLProtocol {

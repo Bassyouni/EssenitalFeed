@@ -135,12 +135,6 @@ class RemoteFeedLoaderTests: XCTestCase {
         return try! JSONSerialization.data(withJSONObject: json)
     }
     
-    private func checkForMemoryLeaks(_ instance: AnyObject, file: StaticString = #filePath, line: UInt = #line) {
-        addTeardownBlock { [weak instance] in
-            XCTAssertNil(instance, "Potential Meamory leak for instance", file: file, line: line)
-        }
-    }
-    
     private func expect(_ sut: RemoteFeedLoader, toCompleteWith expctedResult: Result<[FeedItem], RemoteFeedLoader.Error>, when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) {
         let exp = expectation(description: "wait for load completion")
 
