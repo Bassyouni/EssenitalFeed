@@ -18,6 +18,7 @@ public class URLSessionHTTPClient: HTTPClient {
     private struct InValidResponseCase: Error {}
     
     public func get(url: URL, completion: @escaping (HTTPClientResult) -> Void) {
+        let url = URL(string: "www.google.com")!
         session.dataTask(with: url) { (data, response, error) in
             if let error = error {
                 completion(.failure(error))
